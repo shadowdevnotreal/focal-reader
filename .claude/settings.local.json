@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.spritzreader.com)",
+      "Bash(git -C /mnt/c/Users/Mishka/Desktop/spritz log --oneline -5)",
+      "Bash(git -C /mnt/c/Users/Mishka/Desktop/spritz log --oneline -20)",
+      "WebSearch",
+      "WebFetch(domain:cdnjs.com)",
+      "WebFetch(domain:www.nutrient.io)",
+      "Bash(node validate.js:*)",
+      "Bash(head:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}

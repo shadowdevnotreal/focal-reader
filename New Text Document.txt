@@ -1,0 +1,22 @@
+# 1. Navigate to your project folder
+cd "path/to/Focal Reader"
+
+# 2. Initialize git
+git init
+
+# 3. Create .gitignore (optional — exclude node_modules if any)
+echo "node_modules/" > .gitignore
+
+# 4. Add all files
+git add .
+
+# 5. Initial commit
+git commit -m "Initial release — Focal Speed Reader PWA"
+
+# 6. Create the repo on GitHub (requires gh CLI, or do it on github.com)
+gh repo create focal-reader --public --description "Speed reading PWA with RSVP science, psychometric diagnostics, AI-powered quizzes, and accessibility-first design" --source=. --remote=origin --push
+
+# OR if you already created the repo on github.com:
+git remote add origin https://github.com/YOUR_USERNAME/focal-reader.git
+git branch -M main
+git push -u origin main
