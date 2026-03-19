@@ -86,16 +86,16 @@ AI-generated assessments with real grading and per-text score tracking:
 
 ```
 ┌─ Q1 — Multiple Choice ──────────────────────────┐
-│ What is the primary advantage of RSVP?           │
-│                                                   │
-│  (A) Eliminates saccadic eye movement     ← ✅   │
-│  (B) Increases font size                         │
-│  (C) Adds background music                       │
-│  (D) Scrolls text automatically                  │
-│                                                   │
-│  ✅ Correct! RSVP removes the need for eyes to   │
-│  jump between fixation points.                    │
-└──────────────────────────────────────────────────┘
+│ What is the primary advantage of RSVP?          │
+│                                                 │
+│  (A) Eliminates saccadic eye movement           │
+│  (B) Increases font size                        │
+│  (C) Adds background music                      │
+│  (D) Scrolls text automatically                 │
+│                                                 │
+│  Correct! RSVP removes the need for eyes to     │
+│  jump between fixation points.                  │
+└─────────────────────────────────────────────────┘
 ```
 
 - **Multiple choice** — 4 options with clickable cards
