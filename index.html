@@ -188,6 +188,9 @@ body {
 body.dyslexia-font, body.dyslexia-font * {
     font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
 }
+body.atkinson-font, body.atkinson-font * {
+    font-family: 'Atkinson Hyperlegible', 'Arial', sans-serif !important;
+}
 
 /* ── UI FONT FAMILIES ── */
 body.font-inter      { font-family: 'Inter', system-ui, sans-serif; }
@@ -195,11 +198,16 @@ body.font-humanist   { font-family: 'Gill Sans', Optima, 'Trebuchet MS', Calibri
 body.font-serif      { font-family: Georgia, 'Palatino Linotype', Palatino, serif; }
 body.font-mono       { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Courier New', monospace; }
 body.font-rounded    { font-family: 'Nunito', 'Varela Round', 'Century Gothic', sans-serif; }
-/* dyslexia still wins over font-family class */
+/* accessibility fonts win over font-family class */
 body.dyslexia-font, body.dyslexia-font.font-inter,
 body.dyslexia-font.font-humanist, body.dyslexia-font.font-serif,
 body.dyslexia-font.font-mono, body.dyslexia-font.font-rounded {
     font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+}
+body.atkinson-font, body.atkinson-font.font-inter,
+body.atkinson-font.font-humanist, body.atkinson-font.font-serif,
+body.atkinson-font.font-mono, body.atkinson-font.font-rounded {
+    font-family: 'Atkinson Hyperlegible', 'Arial', sans-serif !important;
 }
 
 #app {
@@ -644,12 +652,27 @@ button:focus:not(:focus-visible), input:focus:not(:focus-visible) { outline: non
 .guide-tick.top { border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--accent); }
 .guide-tick.bottom { border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 7px solid var(--accent); }
 
+/* ── COGNITIVE READING MODES ── */
+/* scan: thin weight, wide spacing — fast word recognition at high WPM */
+body.cognitive-scan #wc {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+}
+/* deep: heavier serif — slower WPM, comprehension focus */
+body.cognitive-deep #wc {
+    font-family: Georgia, 'Palatino Linotype', serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+body.cognitive-deep #wo { font-weight: 900; }
+
 #wc {
     display: flex; align-items: center;
     font-family: 'Courier New', Courier, monospace;
     font-size: var(--reader-size, 2.8rem);
     line-height: 1; white-space: nowrap; width: 100%; padding: 0 16px;
-    transition: font-size 0.2s;
+    transition: font-size 0.2s, font-family 0.2s, font-weight 0.2s, letter-spacing 0.2s;
 }
 
 #wc.a-c #wb { flex: 0 0 calc(50% - 0.3em); }
@@ -1140,6 +1163,114 @@ button:focus:not(:focus-visible), input:focus:not(:focus-visible) { outline: non
 /* ═══════════════════════════════════════
    HELP MODAL
    ═══════════════════════════════════════ */
+
+/* ── ONBOARDING MODAL ── */
+#onboard-bg {
+    display: none; position: fixed; inset: 0;
+    background: var(--overlay-bg); z-index: 300;
+    align-items: center; justify-content: center;
+    padding: 20px; backdrop-filter: blur(8px);
+}
+#onboard-bg.vis { display: flex; }
+#onboard-box {
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px 28px 24px;
+    max-width: 420px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    position: relative;
+}
+#onboard-box h2 { font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; }
+#onboard-box .ob-sub { font-size: 0.82rem; color: var(--fg-secondary); margin-bottom: 20px; line-height: 1.6; }
+.ob-ramp {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    margin-bottom: 20px;
+}
+.ob-ramp-step {
+    background: var(--bg-raised); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 8px; text-align: center;
+}
+.ob-ramp-step .ob-day { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--fg-muted); margin-bottom: 4px; }
+.ob-ramp-step .ob-wpm { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+.ob-ramp-step .ob-hint { font-size: 0.6rem; color: var(--fg-muted); margin-top: 2px; }
+#onboard-progress { margin-bottom: 16px; }
+#onboard-progress label { font-size: 0.72rem; color: var(--fg-muted); display: block; margin-bottom: 4px; }
+#onboard-track { height: 4px; border-radius: 2px; background: var(--bg-raised); overflow: hidden; }
+#onboard-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s; }
+.ob-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+#btn-ob-calibrate {
+    flex: 1; padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem;
+    font-family: inherit; transition: opacity 0.15s;
+}
+#btn-ob-calibrate:hover { opacity: 0.85; }
+#btn-ob-skip {
+    padding: 10px 14px; border-radius: 8px; cursor: pointer;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--fg-muted); font-size: 0.82rem; font-family: inherit;
+    transition: border-color 0.15s;
+}
+#btn-ob-skip:hover { border-color: var(--fg-muted); }
+
+/* ── Focal Tooltips ─────────────────────────────────── */
+#focal-tooltip {
+    position: fixed; z-index: 650;
+    max-width: 270px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-em);
+    border-radius: 8px;
+    padding: 9px 13px;
+    font-size: 0.72rem; line-height: 1.55;
+    color: var(--fg-primary);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    pointer-events: none;
+    opacity: 0; transition: opacity 0.15s;
+    white-space: normal; word-break: break-word;
+}
+#focal-tooltip.vis { opacity: 1; }
+.tip-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--bg-raised); color: var(--fg-muted);
+    font-size: 0.6rem; font-style: normal; font-weight: 700;
+    cursor: default; vertical-align: middle; margin-left: 5px;
+    flex-shrink: 0; line-height: 1; transition: background 0.15s, color 0.15s;
+}
+.tip-icon:hover { background: var(--accent); color: #fff; }
+
+/* ── Feature Tour ──────────────────────────────────── */
+#tour-overlay { display: none; position: fixed; inset: 0; z-index: 580; }
+#tour-overlay.vis { display: block; }
+#tour-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.7); pointer-events: all; }
+#tour-spotlight {
+    position: absolute; border-radius: 10px;
+    box-shadow: 0 0 0 3px var(--accent), 0 0 0 9999px rgba(0,0,0,0.7);
+    pointer-events: none;
+    transition: top 0.28s ease, left 0.28s ease, width 0.28s ease, height 0.28s ease;
+    z-index: 1;
+}
+#tour-popover {
+    position: absolute; z-index: 2;
+    background: var(--bg-surface); border: 1px solid var(--border-em);
+    border-radius: 12px; padding: 16px 18px 13px;
+    max-width: 295px; min-width: 220px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+    pointer-events: all;
+    transition: top 0.28s ease, left 0.28s ease;
+}
+#tour-popover h4 { font-size: 0.9rem; font-weight: 700; margin: 0 0 6px; color: var(--fg-primary); }
+#tour-popover p { font-size: 0.75rem; color: var(--fg-secondary); line-height: 1.55; margin: 0 0 12px; }
+.tour-footer { display: flex; align-items: center; gap: 8px; }
+.tour-dots { display: flex; gap: 4px; flex: 1; }
+.tour-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--bg-raised); border: 1px solid var(--border); transition: background 0.2s; }
+.tour-dot.on { background: var(--accent); border-color: var(--accent); }
+#btn-tour-next { padding: 6px 16px; font-size: 0.76rem; background: var(--accent); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-family: inherit; }
+#btn-tour-next:hover { opacity: 0.88; }
+#btn-tour-skip { padding: 6px 8px; font-size: 0.72rem; color: var(--fg-muted); background: transparent; border: none; cursor: pointer; font-family: inherit; }
+#btn-tour-skip:hover { color: var(--fg-secondary); }
+
+/* ── Auto cognitive label ─────────────────────────── */
+#cognitive-auto-label { font-size: 0.68rem; color: var(--accent); margin-top: 5px; display: none; }
+#cognitive-auto-label.vis { display: block; }
 
 #help-bg {
     display: none; position: fixed; inset: 0;
@@ -4030,12 +4161,27 @@ This               mass(/)    on ──── everyone
     </div>
 
     <div class="s-section">
-        <h3>Dyslexia-Friendly Font</h3>
-        <p style="font-size:0.72rem;color:var(--fg-muted);margin-bottom:6px">Overrides font style above.</p>
-        <div class="s-toggle" id="dyslexia-toggle">
-            <button class="on" data-v="off">Off</button>
-            <button data-v="on">On</button>
+        <h3>Reading Display Mode</h3>
+        <p style="font-size:0.72rem;color:var(--fg-muted);margin-bottom:6px">Adjusts RSVP word typography to match your cognitive goal.</p>
+        <div class="s-toggle" id="cognitive-toggle">
+            <button class="on" data-v="default" title="Monospace — neutral baseline">Default</button>
+            <button data-v="scan" title="Thin sans-serif, wide spacing — fast recognition">Scan</button>
+            <button data-v="deep" title="Heavy serif — comprehension focus">Deep</button>
+            <button data-v="auto" title="Switches automatically based on your WPM">Auto ✦</button>
         </div>
+        <div id="cognitive-auto-label"></div>
+        <p style="font-size:0.68rem;color:var(--fg-muted);margin-top:6px"><strong>Scan</strong> — light Inter, open spacing for high-WPM skimming. <strong>Deep</strong> — bold Georgia serif for slow deliberate comprehension. <strong>Auto</strong> — switches based on your current WPM (≥350 → Scan, ≤200 → Deep).</p>
+    </div>
+
+    <div class="s-section">
+        <h3>Accessible Reading Font</h3>
+        <p style="font-size:0.72rem;color:var(--fg-muted);margin-bottom:6px">Overrides UI font above. Both fonts are clinically designed to reduce reading errors.</p>
+        <div class="s-toggle" id="dyslexia-toggle" style="flex-wrap:wrap;gap:4px">
+            <button class="on" data-v="off">Off</button>
+            <button data-v="opendyslexic" style="font-family:'OpenDyslexic','Comic Sans MS',sans-serif;font-size:0.78rem">OpenDyslexic</button>
+            <button data-v="atkinson" style="font-family:'Atkinson Hyperlegible','Arial',sans-serif;font-size:0.78rem">Atkinson</button>
+        </div>
+        <p style="font-size:0.68rem;color:var(--fg-muted);margin-top:6px"><strong>OpenDyslexic</strong> — weighted letter bottoms prevent reversal. <strong>Atkinson Hyperlegible</strong> — high inter-character differentiation for low vision.</p>
     </div>
 
     <div class="s-section">
@@ -4087,6 +4233,57 @@ This               mass(/)    on ──── everyone
         <button class="btn glass-hover" id="btn-factory-reset" style="color:var(--warn)">Reset Everything</button>
     </div>
 </aside>
+
+<!-- Feature Tour Overlay -->
+<div id="tour-overlay" role="dialog" aria-label="Feature tour" aria-modal="true">
+    <div id="tour-backdrop"></div>
+    <div id="tour-spotlight"></div>
+    <div id="tour-popover">
+        <h4 id="tour-title">Feature</h4>
+        <p id="tour-body">Description goes here.</p>
+        <div class="tour-footer">
+            <div class="tour-dots" id="tour-dots"></div>
+            <button id="btn-tour-skip">Skip tour</button>
+            <button id="btn-tour-next">Next →</button>
+        </div>
+    </div>
+</div>
+
+<!-- Onboarding Modal -->
+<div id="onboard-bg" role="dialog" aria-label="Welcome to Focal">
+    <div id="onboard-box">
+        <h2>Welcome to Focal</h2>
+        <p class="ob-sub">RSVP takes about <strong>2 weeks</strong> to feel natural — your brain needs time to build the reflex. Start slow, push a little each session, and your speed will compound.</p>
+
+        <div class="ob-ramp">
+            <div class="ob-ramp-step">
+                <div class="ob-day">Days 1–3</div>
+                <div class="ob-wpm">200 WPM</div>
+                <div class="ob-hint">Build the habit</div>
+            </div>
+            <div class="ob-ramp-step">
+                <div class="ob-day">Days 4–7</div>
+                <div class="ob-wpm">250 WPM</div>
+                <div class="ob-hint">Feel the rhythm</div>
+            </div>
+            <div class="ob-ramp-step">
+                <div class="ob-day">Days 8–14</div>
+                <div class="ob-wpm">300+ WPM</div>
+                <div class="ob-hint">Comprehension locks in</div>
+            </div>
+        </div>
+
+        <div id="onboard-progress">
+            <label id="onboard-day-label">Training Day 1 of 14</label>
+            <div id="onboard-track"><div id="onboard-fill" style="width:7%"></div></div>
+        </div>
+
+        <div class="ob-actions">
+            <button id="btn-ob-calibrate">Start Calibration Session (200 WPM)</button>
+            <button id="btn-ob-skip">Skip for now</button>
+        </div>
+    </div>
+</div>
 
 <!-- Help Modal -->
 <div id="help-bg">
@@ -4266,7 +4463,8 @@ This               mass(/)    on ──── everyone
     var LS_BOOKMARKS = 'focal_bookmarks';
     var LS_QUIZ_SCORES = 'focal_quiz_scores'; // per-text quiz scores { textHash: [scores] }
     var LS_SESSION = 'focal_session';          // persists loaded text + position + pomo state
-    var DYSLEXIA_FONT_URL = 'https://fonts.cdnfonts.com/css/opendyslexic';
+    var DYSLEXIA_FONT_URL  = 'https://fonts.cdnfonts.com/css/opendyslexic';
+    var ATKINSON_FONT_URL  = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap';
     // CORS proxy cascade — tried in order until one succeeds.
     // allorigins.win removed: it no longer sends Access-Control-Allow-Origin, breaking preflight.
     var CORS_PROXIES = [
@@ -4305,7 +4503,8 @@ This               mass(/)    on ──── everyone
         fontSize: 2.8,
         ramp: false,
         rampStartWpm: 150,
-        dyslexia: false,
+        dyslexia: 'off',
+        cognitiveMode: 'default',
         groqKey: '',
         animIntensity: 100,
         animations: true,
@@ -4402,7 +4601,7 @@ This               mass(/)    on ──── everyone
                 bgHue: state.bgHue, bgSat: state.bgSat, bgLightAdj: state.bgLightAdj, bgTempAdj: state.bgTempAdj,
                 fontFamily: state.fontFamily,
                 fontSize: state.fontSize, wpm: state.wpm, chunk: state.chunk,
-                align: state.align, ramp: state.ramp, dyslexia: state.dyslexia,
+                align: state.align, ramp: state.ramp, dyslexia: state.dyslexia, cognitiveMode: state.cognitiveMode,
                 groqKey: state.groqKey, animIntensity: state.animIntensity, dailyGoal: state.dailyGoal,
                 activeTab: state.activeTab || 'read',
                 cardStates: getCardStates(),
@@ -4452,7 +4651,9 @@ This               mass(/)    on ──── everyone
             if (d.chunk) state.chunk = d.chunk;
             if (d.align) state.align = d.align;
             if (typeof d.ramp === 'boolean') state.ramp = d.ramp;
-            if (typeof d.dyslexia === 'boolean') state.dyslexia = d.dyslexia;
+            if (typeof d.dyslexia === 'string') state.dyslexia = d.dyslexia;
+            else if (typeof d.dyslexia === 'boolean') state.dyslexia = d.dyslexia ? 'opendyslexic' : 'off';
+            if (typeof d.cognitiveMode === 'string') state.cognitiveMode = d.cognitiveMode;
             if (typeof d.animIntensity === 'number') state.animIntensity = d.animIntensity;
             if (typeof d.animations === 'boolean') { state.animations = d.animations; if (!d.animations) state.animIntensity = 0; }
             if (d.groqKey) state.groqKey = d.groqKey;
@@ -5005,6 +5206,165 @@ This               mass(/)    on ──── everyone
         applyBg(newHue, newSat);
     }
 
+    /* ── Tooltip System ─────────────────────────────── */
+    var SETTING_TIPS = {
+        'Theme': 'Switch between dark and light mode. Dark mode reduces eye strain in low-light environments and is easier on RSVP reading at high WPM.',
+        'Brightness': 'Dim the entire app independently of your system brightness. Useful for late-night reading sessions when full brightness causes glare.',
+        'High Contrast': 'Increases text-background contrast ratio — helps reading accuracy in bright environments and for users with low contrast sensitivity.',
+        'Accent Color': 'Your personal color theme. Applied to buttons, the ORP focus marker, progress bars, and all active states throughout the app. Supports custom hex values.',
+        'Background Palette': 'Fine-tune background hue and saturation across all four app surfaces: page, cards, reader area, and buttons. Preview strip shows changes live.',
+        'Display Font Size': 'Controls the RSVP word size in the reader. Larger text reduces cognitive load at high WPM because letter recognition is faster. Range: 1.6–4.5rem.',
+        'UI Font Style': 'The typeface used throughout the interface panels. Does not affect the RSVP display — use Reading Display Mode for that. Each button previews its own font.',
+        'Reading Display Mode': 'Adapts RSVP word typography to your reading goal. Scan: light Inter with open tracking for fast skimming. Deep: bold Georgia serif for slow comprehension. Auto: switches intelligently based on your current WPM.',
+        'Accessible Reading Font': 'Clinically designed alternatives to reduce reading errors. OpenDyslexic uses weighted letter bottoms to prevent b/d/p/q reversals. Atkinson Hyperlegible maximizes inter-character differentiation for low vision users.',
+        'Speed Ramp-Up': 'Starts each session 40% slower than your target WPM and accelerates to full speed over the first 50 words. Helps your brain engage the reading reflex before hitting full speed.',
+        'Groq AI API Key': 'Unlocks AI features: comprehension quizzes after reading, text summarization, and Flesch-Kincaid reading level analysis. Free tier at groq.com. Your key is stored locally only.',
+        'Animations': 'Controls all transition effects. Reduce if you experience visual fatigue, motion sensitivity (vestibular disorder), or want a snappier-feeling UI.',
+        'Reading Goals': 'Set your daily reading target in minutes. A progress bar on the Read tab shows how close you are each day. Streaks reward consecutive active days.',
+        'Factory Reset': 'Permanently deletes all settings, reading history, bookmarks, and library entries. Export your stats from the Stats tab first — this cannot be undone.'
+    };
+
+    (function initTooltip() {
+        var tip = document.createElement('div');
+        tip.id = 'focal-tooltip';
+        document.body.appendChild(tip);
+        var hideTimer;
+        document.addEventListener('mouseover', function (e) {
+            var el = e.target.closest('[data-tip]');
+            if (!el) return;
+            clearTimeout(hideTimer);
+            tip.textContent = el.dataset.tip;
+            tip.classList.add('vis');
+            var r = el.getBoundingClientRect();
+            var tw = Math.min(270, 270);
+            var top = r.bottom + 6;
+            var left = r.left + r.width / 2 - 135;
+            if (top + 120 > window.innerHeight) top = r.top - 10; // above
+            left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+            tip.style.top = top + 'px';
+            tip.style.left = left + 'px';
+        });
+        document.addEventListener('mouseout', function (e) {
+            var el = e.target.closest('[data-tip]');
+            if (!el) return;
+            hideTimer = setTimeout(function () { tip.classList.remove('vis'); }, 120);
+        });
+    }());
+
+    function initSettingTooltips() {
+        document.querySelectorAll('#s-drawer .s-section h3').forEach(function (h3) {
+            var key = h3.childNodes[0] && h3.childNodes[0].textContent
+                ? h3.childNodes[0].textContent.trim()
+                : h3.textContent.trim();
+            var tipText = SETTING_TIPS[key];
+            if (!tipText) return;
+            var icon = document.createElement('span');
+            icon.className = 'tip-icon';
+            icon.dataset.tip = tipText;
+            icon.setAttribute('aria-label', 'More info');
+            icon.textContent = 'i';
+            h3.appendChild(icon);
+        });
+    }
+
+    /* ── Feature Tour ───────────────────────────────── */
+    var TOUR_KEY = 'focal-tour';
+    var tourStep = 0;
+    var TOUR_STEPS = [
+        {
+            sel: '#input-section',
+            title: 'Load Text',
+            body: 'Paste anything here — articles, books, notes. Or drop a file, fetch a URL, or pick from your Library. Focal breaks it into words for RSVP.'
+        },
+        {
+            sel: '#word-display',
+            title: 'RSVP Display',
+            body: 'One word flashes here at your target speed. The red letter is the Optimal Recognition Point — where your eye naturally locks in. Your brain does the rest.'
+        },
+        {
+            sel: '#bp',
+            title: 'Play & Navigate',
+            body: 'Hit Space or click ▶ to start. Use ‹ › to step word-by-word, or «» to jump 5 at a time. Progress bar at the bottom lets you scrub anywhere.'
+        },
+        {
+            sel: '#srow',
+            title: 'Speed Control',
+            body: 'Drag the WPM slider or tap a preset. Start at 200–250 while you\'re adapting — your brain needs about 2 weeks to build the RSVP reflex at higher speeds.'
+        },
+        {
+            sel: '#btn-settings',
+            title: 'Settings',
+            body: 'Customize fonts, colors, accessibility modes (dyslexic fonts, high contrast), AI features, animations, and your daily reading goal. All stored locally.'
+        },
+        {
+            sel: '[data-tab="stats"]',
+            title: 'Stats & Progress',
+            body: 'Track your WPM trend, session duration, focus quality score, comprehension quiz results, and daily activity. Your reading history is always here.'
+        }
+    ];
+
+    function isTourDone() {
+        try { return JSON.parse(localStorage.getItem(TOUR_KEY) || '{}').done; } catch (e) { return false; }
+    }
+    function markTourDone() {
+        try { localStorage.setItem(TOUR_KEY, JSON.stringify({ done: true })); } catch (e) {}
+    }
+
+    function showTour() {
+        tourStep = 0;
+        var overlay = $('tour-overlay');
+        if (!overlay) return;
+        var dotsEl = $('tour-dots');
+        dotsEl.innerHTML = '';
+        TOUR_STEPS.forEach(function (_, i) {
+            var d = document.createElement('div');
+            d.className = 'tour-dot';
+            dotsEl.appendChild(d);
+        });
+        overlay.classList.add('vis');
+        renderTourStep();
+    }
+
+    function hideTour() {
+        var overlay = $('tour-overlay');
+        if (overlay) overlay.classList.remove('vis');
+        markTourDone();
+    }
+
+    function renderTourStep() {
+        var step = TOUR_STEPS[tourStep];
+        var el = document.querySelector(step.sel);
+        $('tour-title').textContent = step.title;
+        $('tour-body').textContent = step.body;
+        $('btn-tour-next').textContent = tourStep === TOUR_STEPS.length - 1 ? 'Done ✓' : 'Next →';
+        document.querySelectorAll('.tour-dot').forEach(function (d, i) {
+            d.classList.toggle('on', i === tourStep);
+        });
+        if (!el) return;
+        var r = el.getBoundingClientRect();
+        var pad = 6;
+        var spot = $('tour-spotlight');
+        spot.style.top  = (r.top  - pad) + 'px';
+        spot.style.left = (r.left - pad) + 'px';
+        spot.style.width  = (r.width  + pad * 2) + 'px';
+        spot.style.height = (r.height + pad * 2) + 'px';
+        var pop = $('tour-popover');
+        var pw = 295, ph = 160;
+        var top = r.bottom + 16;
+        var left = r.left + r.width / 2 - pw / 2;
+        if (top + ph > window.innerHeight - 10) top = r.top - ph - 16;
+        if (top < 10) top = 10;
+        left = Math.max(10, Math.min(left, window.innerWidth - pw - 10));
+        pop.style.top  = top + 'px';
+        pop.style.left = left + 'px';
+    }
+
+    function tourNext() {
+        tourStep++;
+        if (tourStep >= TOUR_STEPS.length) { hideTour(); return; }
+        renderTourStep();
+    }
+
     function applyContrast(c) {
         state.contrast = c;
         html.setAttribute('data-contrast', c);
@@ -5049,13 +5409,44 @@ This               mass(/)    on ──── everyone
 
     function toggleTheme() { applyTheme(state.theme === 'dark' ? 'light' : 'dark'); }
 
-    function applyDyslexia(on) {
-        state.dyslexia = on;
-        document.body.classList.toggle('dyslexia-font', on);
+    function applyDyslexia(mode) {
+        // mode: 'off' | 'opendyslexic' | 'atkinson'
+        if (typeof mode === 'boolean') mode = mode ? 'opendyslexic' : 'off';
+        state.dyslexia = mode;
+        document.body.classList.toggle('dyslexia-font', mode === 'opendyslexic');
+        document.body.classList.toggle('atkinson-font',  mode === 'atkinson');
         document.querySelectorAll('#dyslexia-toggle button').forEach(function (b) {
-            b.classList.toggle('on', b.dataset.v === (on ? 'on' : 'off'));
+            b.classList.toggle('on', b.dataset.v === mode);
         });
         savePrefs();
+    }
+
+    function applyCognitiveMode(mode) {
+        state.cognitiveMode = mode || 'default';
+        var resolved = mode;
+        if (mode === 'auto') {
+            resolved = state.wpm >= 350 ? 'scan' : state.wpm <= 200 ? 'deep' : 'default';
+        }
+        document.body.classList.toggle('cognitive-scan', resolved === 'scan');
+        document.body.classList.toggle('cognitive-deep', resolved === 'deep');
+        document.querySelectorAll('#cognitive-toggle button').forEach(function (b) {
+            b.classList.toggle('on', b.dataset.v === mode);
+        });
+        var autoLabel = $('cognitive-auto-label');
+        if (autoLabel) {
+            if (mode === 'auto') {
+                var names = { scan: 'Scan', deep: 'Deep', default: 'Default' };
+                autoLabel.textContent = 'Currently applying: ' + names[resolved] + ' (WPM ' + state.wpm + ')';
+                autoLabel.classList.add('vis');
+            } else {
+                autoLabel.classList.remove('vis');
+            }
+        }
+        savePrefs();
+    }
+
+    function autoSuggestCognitiveMode() {
+        if (state.cognitiveMode === 'auto') applyCognitiveMode('auto');
     }
 
     var FONT_GF = {
@@ -5673,13 +6064,91 @@ This               mass(/)    on ──── everyone
        DYSLEXIA FONT LOADER
        ═══════════════════════════════════ */
 
+    /* ═══════════════════════════════════
+       ONBOARDING
+       ═══════════════════════════════════ */
+
+    var OB_KEY = 'focal-ob';
+
+    function getTrainingDay() {
+        try {
+            var d = JSON.parse(localStorage.getItem(OB_KEY));
+            if (d && typeof d.startDate === 'string') {
+                var diff = Math.floor((Date.now() - new Date(d.startDate).getTime()) / 86400000) + 1;
+                return Math.min(diff, 14);
+            }
+        } catch (e) {}
+        return 1;
+    }
+
+    function isOnboardingDone() {
+        try {
+            var d = JSON.parse(localStorage.getItem(OB_KEY));
+            return d && d.done;
+        } catch (e) { return false; }
+    }
+
+    function markOnboardingStarted() {
+        try {
+            var existing = JSON.parse(localStorage.getItem(OB_KEY)) || {};
+            if (!existing.startDate) existing.startDate = new Date().toISOString();
+            localStorage.setItem(OB_KEY, JSON.stringify(existing));
+        } catch (e) {}
+    }
+
+    function markOnboardingDone() {
+        try {
+            var existing = JSON.parse(localStorage.getItem(OB_KEY)) || {};
+            existing.done = true;
+            localStorage.setItem(OB_KEY, JSON.stringify(existing));
+        } catch (e) {}
+    }
+
+    function showOnboarding() {
+        markOnboardingStarted();
+        var day = getTrainingDay();
+        var pct = Math.round((day / 14) * 100);
+        var label = $('onboard-day-label');
+        var fill  = $('onboard-fill');
+        if (label) label.textContent = 'Training Day ' + day + ' of 14';
+        if (fill)  fill.style.width  = pct + '%';
+        $('onboard-bg').classList.add('vis');
+    }
+
+    function hideOnboarding() {
+        $('onboard-bg').classList.remove('vis');
+    }
+
+    var CALIBRATION_TEXT = 'RSVP stands for Rapid Serial Visual Presentation. Words appear one at a time at a fixed point. Your eyes stay still. Your brain reads faster. Start at two hundred words per minute. Let the rhythm build. Each session trains your brain a little more. By day fourteen most readers reach three hundred words per minute or higher. The key is consistency. Short daily sessions beat long occasional ones. Press space to pause any time. Use the arrow keys to step back if you miss a word. You are doing great. This is day one.';
+
+    function startCalibrationSession() {
+        hideOnboarding();
+        markOnboardingDone();
+        // Set WPM to 200 for the calibration
+        state.wpm = 200;
+        wSlider.value = 200;
+        wVal.textContent = 200;
+        loadText(CALIBRATION_TEXT, 'Calibration — Day 1');
+        savePrefs();
+        syncWpmPresets();
+    }
+
     var dyslexiaLoaded = false;
+    var atkinsonLoaded  = false;
     function loadDyslexiaFont() {
         if (dyslexiaLoaded) return;
         dyslexiaLoaded = true;
         var link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = DYSLEXIA_FONT_URL;
+        document.head.appendChild(link);
+    }
+    function loadAtkinsonFont() {
+        if (atkinsonLoaded) return;
+        atkinsonLoaded = true;
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = ATKINSON_FONT_URL;
         document.head.appendChild(link);
     }
 
@@ -6803,26 +7272,46 @@ This               mass(/)    on ──── everyone
     var POS_DICT = {};
     var POS_AMBIG = {}; // words that can be multiple POS depending on context
     (function () {
-        var dets = 'the a an this that these those my your his her its our their some any each every all both few many much several no'.split(' ');
-        var preps = 'in on at to for with from by of about into through during before after above below between among against around behind beyond near under upon within without along across toward towards'.split(' ');
+        var dets = 'the a an this that these those my your his her its our their some any each every all both few many much several no one two three four five six seven eight nine ten eleven twelve hundred thousand million billion'.split(' ');
+        var preps = 'in on at to for with from by of about into through during before after above below between among against around behind beyond near under upon within without along across toward towards over off out up down past despite except versus plus minus regarding concerning'.split(' ');
         var conjs = 'and but or nor yet so because although though while when if unless until since whereas however moreover furthermore nevertheless'.split(' ');
         var prons = 'i me mine myself you yours yourself he him himself she her hers herself it itself we us ours ourselves they them theirs themselves who whom whose which what everyone everybody someone somebody anyone anybody nobody nothing everything something anything'.split(' ');
-        var advs = 'very really quite just also too always never often sometimes usually already still even almost enough again here there now then finally slowly quickly well badly easily hardly not mass'.split(' ');
+        var advs = 'very really quite just also too always never often sometimes usually already still even almost enough again here there now then finally slowly quickly well badly easily hardly not mass fast faster fastest slow slower slowest hard harder hardly soon sooner late later early earlier close closely further farther away back forward together apart once twice'.split(' ');
         var auxVerbs = 'is am are was were be been being have has had do does did will would shall should can could may might must'.split(' ');
+        // Common adjectives (missing from morphological rules — all default to NOUN without this list)
+        var adjs = 'good bad big small large little old new young long short great high low hot cold dark light hard soft strong weak true false right wrong open closed full empty whole real clear free ready simple easy hard difficult special important possible sure main various certain able former single same different other major several last first next own best better worst worse rich poor fast slow busy free happy sad angry calm loud quiet clean dirty safe dangerous beautiful ugly smart clever stupid funny serious heavy light thin thick wide narrow deep shallow round flat rough smooth warm cool bright dim quick sharp dull heavy gentle wild calm brave shy bold keen sharp dear cheap expensive fine grand subtle solid liquid fresh pure raw distant recent local global public private general personal political social economic cultural natural physical mental emotional fascinating interesting surprising shocking amazing entertaining boring exciting'.split(' ');
+        // -ly adjectives that must NOT be retagged as ADV by morphological rule
+        var lyAdjs = 'friendly lovely likely lively lonely orderly timely ugly deadly elderly kingly queenly cowardly earthly godly holy oily manly womanly motherly fatherly brotherly sisterly scholarly leisurely'.split(' ');
+        // Common comparatives/superlatives (else -er suffix misfires as NOUN)
+        var comparatives = 'bigger smaller older newer longer shorter higher lower faster slower harder softer easier earlier later closer farther better worse larger greater lesser finer lighter heavier warmer cooler brighter dimmer quieter louder cleaner stronger weaker richer poorer safer wider narrower deeper shallower thicker thinner rougher smoother calmer wilder'.split(' ');
         dets.forEach(function (w) { POS_DICT[w] = 'det'; });
         preps.forEach(function (w) { POS_DICT[w] = 'prep'; });
         conjs.forEach(function (w) { POS_DICT[w] = 'conj'; });
         prons.forEach(function (w) { POS_DICT[w] = 'pron'; });
         advs.forEach(function (w) { POS_DICT[w] = 'adv'; });
         auxVerbs.forEach(function (w) { POS_DICT[w] = 'verb'; });
-        // Common main verbs
-        'go goes went gone get gets got say says said make makes made know knows knew see sees saw come comes came take takes took give gives gave find finds found think thinks thought tell tells told become becomes became leave leaves left feel feels felt put puts keep keeps kept let begin begins began seem seems seemed help helps helped show shows showed turn turns turned enter enters entered want wants wanted need needs needed like likes liked love loves loved hate hates hated run runs ran walk walks walked talk talks talked work works worked play plays played call calls called move moves moved live lives lived try tries tried use uses used look looks looked ask asks asked bring brings brought write writes wrote read reads sing sings sang sit sits sat stand stands stood speak speaks spoke hold holds held'.split(' ').forEach(function (w) { POS_DICT[w] = 'verb'; });
-        // Ambiguous words (resolved by context)
+        adjs.forEach(function (w) { POS_DICT[w] = 'adj'; });
+        comparatives.forEach(function (w) { POS_DICT[w] = 'adj'; });
+        lyAdjs.forEach(function (w) { POS_DICT[w] = 'adj'; });
+        // Common main verbs (expanded — unknown words default to NOUN which breaks verb detection)
+        'go goes went gone get gets got say says said make makes made know knows knew see sees saw come comes came take takes took give gives gave find finds found think thinks thought tell tells told become becomes became leave leaves left feel feels felt put puts keep keeps kept let begin begins began seem seems seemed help helps helped show shows showed turn turns turned enter enters entered want wants wanted need needs needed like likes liked love loves loved hate hates hated run runs ran walk walks walked talk talks talked work works worked play plays played call calls called move moves moved live lives lived try tries tried use uses used look looks looked ask asks asked bring brings brought write writes wrote read reads sing sings sang sit sits sat stand stands stood speak speaks spoke hold holds held open opens opened close closes closed start starts started stop stops stopped learn learns learned teach teaches taught build builds built break breaks broke fix fixes fixed change changes changed return returns returned pass passes passed follow follows followed grow grows grew show shows showed hear hears heard lose loses lost pay pays paid meet meets met set sets reach reaches reached cut cuts lead leads led send sends sent expect expects expected receive receives received believe believes believed explain explains explained understand understands understood remember remembers remembered forget forgets forgot decide decides decided continue continues continued increase increases increased reduce reduces reduced create creates created choose chooses chose feel feels felt happen happens happened appear appears appeared stay stays stayed lose loses lost walk walks walked run runs ran wait waits waited watch watches watched listen listens listened help helps helped keep keeps kept leave leaves left allow allows allowed continue continues continued support supports supported include includes included add adds added remain remains remained consider considers considered become becomes became hold holds held carry carries carried provide provides provided develop develops developed support supports supported learn learns learned improve improves improved produce produces produced grow grows grew spend spends spent stand stands stood bring brings brought hear hears heard begin begins began hold holds held'.split(' ').forEach(function (w) { POS_DICT[w] = 'verb'; });
+        // Additional verbs: common ones missed by the main list
+        'dance dances danced dancing outperform outperforms outperformed outperforming overcome overcomes overcame overcoming outrun outruns outran outrunning achieve achieves achieved achieving perform performs performed performing inspire inspires inspired inspiring motivate motivates motivated motivating demonstrate demonstrates demonstrated demonstrating indicate indicates indicated indicating suggest suggests suggested suggesting represent represents represented representing enable enables enabled enabling allow allows allowed allowing require requires required requiring determine determines determined determining identify identifies identified identifying establish establishes established establishing maintain maintains maintained maintaining obtain obtains obtained obtaining involve involves involved involving contain contains contained containing apply applies applied applying claim claims claimed claiming affect affects affected affecting relate relates related relating consider considers considered considering include includes included including describe describes described describing discuss discusses discussed discussing emphasize emphasizes emphasized emphasizing illustrate illustrates illustrated illustrating compare compares compared comparing evaluate evaluates evaluated evaluating analyze analyzes analyzed analyzing develop develops developed developing explore explores explored exploring discover discovers discovered discovering create creates created creating design designs designed designing build builds built building implement implements implemented implementing generate generates generated generating contribute contributes contributed contributing influence influences influenced influencing control controls controlled controlling manage manages managed managing combine combines combined combining measure measures measured measuring observe observes observed observing present presents presented presenting provide provides provided providing reveal reveals revealed revealing reflect reflects reflected reflecting expand expands expanded expanding promote promotes promoted promoting strengthen strengthens strengthened strengthening improve improves improved improving reduce reduces reduced reducing increase increases increased increasing support supports supported supporting prepare prepares prepared preparing connect connects connected connecting protect protects protected protecting prevent prevents prevented preventing recognize recognizes recognized recognizing transform transforms transformed transforming challenge challenges challenged challenging encourage encourages encouraged encouraging advance advances advanced advancing'.split(' ').forEach(function (w) { POS_DICT[w] = 'verb'; });
+        // Common -ing nouns (not gerunds — morphological -ing rule would mis-tag these as VERB)
+        'morning evening ceiling warning lightning wedding building meaning blessing feeling opening training ruling reasoning belonging coating housing crossing setting following living covering greeting ending standing banking funding heading boarding nursing suffering belonging suffering pricing'.split(' ').forEach(function (w) { POS_DICT[w] = 'noun'; });
+        // Ambiguous words (resolved by context in second pass)
         POS_AMBIG['that'] = ['det', 'conj', 'pron'];
         POS_AMBIG['for'] = ['prep', 'conj'];
         POS_AMBIG['his'] = ['det', 'pron'];
         POS_AMBIG['her'] = ['det', 'pron'];
         POS_AMBIG['its'] = ['det', 'pron'];
+        POS_AMBIG['fast'] = ['adj', 'adv'];
+        POS_AMBIG['hard'] = ['adj', 'adv'];
+        POS_AMBIG['right'] = ['adj', 'adv', 'noun'];
+        POS_AMBIG['left'] = ['verb', 'adj', 'noun'];
+        POS_AMBIG['light'] = ['adj', 'noun', 'verb'];
+        POS_AMBIG['open'] = ['adj', 'verb'];
+        POS_AMBIG['close'] = ['verb', 'adj'];
     })();
 
     function cleanWord(raw) { return raw.toLowerCase().replace(/[^a-z'-]/g, ''); }
@@ -6842,21 +7331,38 @@ This               mass(/)    on ──── everyone
             if (stripped === '&' || stripped === '+') return { word: raw, pos: 'conj', label: 'CONJ' };
             if (!w) return { word: raw, pos: 'other', label: 'PUNCT' };
 
-            // Dictionary lookup
+            // Dictionary lookup (covers all known adj/adv/verb/det/prep/conj/pron)
             if (POS_DICT[w]) {
                 var p = POS_DICT[w];
-                var labels = { det: 'DET', prep: 'PREP', conj: 'CONJ', pron: 'PRON', verb: 'VERB', adv: 'ADV' };
+                var labels = { det: 'DET', prep: 'PREP', conj: 'CONJ', pron: 'PRON', verb: 'VERB', adv: 'ADV', adj: 'ADJ', aux: 'AUX' };
                 return { word: raw, pos: p, label: labels[p] || p.toUpperCase() };
             }
 
-            // Morphological rules (order matters)
+            // Morphological rules (order matters — most specific first)
+            // -ing: gerund or present participle; position-context disambiguated in second pass
             if (/ing$/.test(w) && w.length > 4) return { word: raw, pos: 'verb', label: 'VERB' };
-            if (/ed$/.test(w) && w.length > 3) return { word: raw, pos: 'verb', label: 'VERB' };
-            if (/ly$/.test(w) && w.length > 3 && !/[aeiou]ly$/.test(w)) return { word: raw, pos: 'adv', label: 'ADV' };
+            // -ed: past tense or past participle
+            if (/ed$/.test(w) && w.length > 3 && !/eed$|ied$/.test(w)) return { word: raw, pos: 'verb', label: 'VERB' };
+            // -ed ending on vowel+d: "loved", "tried" → still verbs
+            if (/ied$/.test(w) && w.length > 4) return { word: raw, pos: 'verb', label: 'VERB' };
+            // Adverb: -ly words are almost always adverbs; true -ly adjectives are in POS_DICT
+            if (/ly$/.test(w) && w.length > 3) return { word: raw, pos: 'adv', label: 'ADV' };
+            // Abstract nouns: -tion/-sion/-ment/-ness/-ity/-ence/-ance
             if (/tion$|sion$|ment$|ness$|ity$|ence$|ance$/.test(w)) return { word: raw, pos: 'noun', label: 'NOUN' };
+            // Adjectives: -ous/-ful/-less/-ive/-able/-ible/-ical/-ish
             if (/ous$|ful$|less$|ive$|able$|ible$|ical$|ish$/.test(w) && w.length > 4) return { word: raw, pos: 'adj', label: 'ADJ' };
-            if (/al$/.test(w) && w.length > 4 && !/ial$/.test(w)) return { word: raw, pos: 'adj', label: 'ADJ' };
-            if (/er$|or$|ist$|ism$/.test(w) && w.length > 3) return { word: raw, pos: 'noun', label: 'NOUN' };
+            // -al adjectives (but not -ial which is already caught above, or -al that are really nouns)
+            if (/al$/.test(w) && w.length > 4 && !/ial$|eal$/.test(w)) return { word: raw, pos: 'adj', label: 'ADJ' };
+            // -er/-or suffix: agent nouns ("reader", "author") BUT NOT comparatives (those are in POS_DICT)
+            // Only tag as noun if base is not a known adj (prevents "faster"→noun after dict miss)
+            if (/or$|ist$|ism$/.test(w) && w.length > 3) return { word: raw, pos: 'noun', label: 'NOUN' };
+            if (/er$/.test(w) && w.length > 3) {
+                // Heuristic: if stem (remove 'er') is a known verb, this is an agent noun; if stem+e is adj, comparative
+                var stem = w.slice(0, -2);
+                if (POS_DICT[stem] === 'adj' || POS_DICT[stem + 'e'] === 'adj') return { word: raw, pos: 'adj', label: 'ADJ' };
+                return { word: raw, pos: 'noun', label: 'NOUN' };
+            }
+            // Plural -s (not -ss/-us/-is endings): likely noun
             if (/s$/.test(w) && !/ss$|us$|is$/.test(w) && w.length > 3) return { word: raw, pos: 'noun', label: 'NOUN' };
 
             return { word: raw, pos: 'noun', label: 'NOUN' };
@@ -6869,35 +7375,59 @@ This               mass(/)    on ──── everyone
             var next = i < tagged.length - 1 ? tagged[i + 1] : null;
 
             // §14.2 AUX vs VERB: auxiliary before another verb form → AUX
-            // Look ahead past intervening adverbs/nouns (e.g. "is mass doxxing" — "mass" sits
-            // between "is" and "doxxing" so a simple next-token check misses it).
+            // Look ahead past intervening adverbs/adjectives/nouns (e.g. "is mass doxxing").
             if (t.pos === 'verb' && AUX_WORDS.indexOf(w) >= 0) {
                 var foundVerbForm = false;
-                for (var la = i + 1; la < Math.min(i + 5, tagged.length); la++) {
+                for (var la = i + 1; la < Math.min(i + 6, tagged.length); la++) {
                     var lw = cleanWord(tagged[la].word);
                     var lpos = tagged[la].pos;
                     if (lpos === 'verb' || (/ing$/.test(lw) && lw.length > 3) || (/ed$/.test(lw) && lw.length > 3)) {
                         foundVerbForm = true; break;
                     }
-                    if (lpos === 'adv' || lpos === 'noun') continue; // skip potential pre-verbal modifiers
-                    break; // stop at any other POS
+                    if (lpos === 'adv' || lpos === 'adj' || lpos === 'noun') continue;
+                    break;
                 }
-                if (foundVerbForm) {
-                    tagged[i] = { word: t.word, pos: 'aux', label: 'AUX' };
+                if (foundVerbForm) tagged[i] = { word: t.word, pos: 'aux', label: 'AUX' };
+            }
+
+            // §14.5 LINKING VERB detection: aux/verb in LINKING_VERBS followed by adj → predicate adj
+            // (no structural change here — analyzer handles it; just ensure tag stays 'verb')
+
+            // §4.3 -ing as gerund NOUN: if an -ing verb appears before any verb/aux in the sentence
+            // (subject position), treat it as a noun gerund — BUT only if its stem is a known verb.
+            // This prevents "morning", "ceiling", "evening" etc. from being mis-tagged as gerunds.
+            if (t.pos === 'verb' && /ing$/.test(w)) {
+                // Stem check: remove -ing (and optionally doubled consonant e.g. "running"→"run")
+                var stem = w.slice(0, -3);
+                var stemE = stem + 'e';              // "reading"→"read", "making"→"make"
+                var stemDouble = stem.slice(0, -1);  // "running"→"run" (doubled consonant)
+                var stemIsVerb = POS_DICT[stem] === 'verb' || POS_DICT[stemE] === 'verb' || POS_DICT[stemDouble] === 'verb';
+                if (stemIsVerb) {
+                    var isBeforeAnyVerb = true;
+                    for (var bi = 0; bi < i; bi++) {
+                        if (tagged[bi].pos === 'verb' || tagged[bi].pos === 'aux') { isBeforeAnyVerb = false; break; }
+                    }
+                    if (isBeforeAnyVerb) {
+                        var hasVerbAfterGerund = false;
+                        for (var gi = i + 1; gi < tagged.length; gi++) {
+                            if (tagged[gi].pos === 'verb' || tagged[gi].pos === 'aux') { hasVerbAfterGerund = true; break; }
+                        }
+                        if (hasVerbAfterGerund) tagged[i] = { word: t.word, pos: 'noun', label: 'NOUN (gerund)' };
+                    }
                 }
             }
 
-            // §4.2 NOUN vs ADV: word before a gerund that modifies how → ADV
-            // "mass doxxing" → "mass" answers "how?" → ADV
+            // §4.2 NOUN vs ADV: word before a gerund that answers "how?" → ADV
+            // "mass doxxing" → "mass" (noun) before gerund verb → ADV
             if (t.pos === 'noun' && next && next.pos === 'verb' && /ing$/.test(cleanWord(next.word))) {
                 tagged[i] = { word: t.word, pos: 'adv', label: 'ADV' };
             }
 
-            // §4.2 DET vs PRON: "his/her/its" followed by noun → DET, standalone → PRON
+            // §4.2 DET vs PRON: "his/her/its" followed by noun/adj → DET, otherwise → PRON
             if (POS_AMBIG[w] && (w === 'his' || w === 'her' || w === 'its')) {
-                if (next && (next.pos === 'noun' || next.pos === 'adj')) {
+                if (next && (next.pos === 'noun' || next.pos === 'adj' || next.pos === 'det')) {
                     tagged[i] = { word: t.word, pos: 'det', label: 'DET' };
-                } else if (!next || next.pos === 'verb' || next.pos === 'other') {
+                } else {
                     tagged[i] = { word: t.word, pos: 'pron', label: 'PRON' };
                 }
             }
@@ -6907,15 +7437,20 @@ This               mass(/)    on ──── everyone
                 tagged[i] = { word: t.word, pos: 'pron', label: 'REL.PRON' };
             }
 
-            // §14.3 PREP vs PART: preposition not followed by noun phrase → likely particle/adverb
+            // §14.3 PREP vs PART: preposition not followed by noun phrase → particle
             if (t.pos === 'prep' && next) {
                 var npos = next.pos;
                 if (npos === 'verb' || npos === 'adv' || npos === 'other') {
-                    // No noun phrase follows → check if phrasal verb particle
                     if (prev && prev.pos === 'verb') {
                         tagged[i] = { word: t.word, pos: 'part', label: 'PART' };
                     }
                 }
+            }
+
+            // §4.2 ADJ context: noun tagged word between DET and NOUN → ADJ
+            // e.g., "the fast car" — "fast" in POS_DICT as adj but may reach here as adv
+            if ((t.pos === 'adv' || t.pos === 'noun') && prev && prev.pos === 'det' && next && next.pos === 'noun') {
+                tagged[i] = { word: t.word, pos: 'adj', label: 'ADJ' };
             }
         }
 
@@ -6946,34 +7481,54 @@ This               mass(/)    on ──── everyone
         // Find the main (first) verb or auxiliary
         var mainVerbStart = verbIndices.length > 0 ? verbIndices[0] : -1;
 
-        // Subject: noun/pron before first verb/aux
+        // Subject: nearest noun/pron IMMEDIATELY before the first verb/aux
+        // Skip sentence-initial prepositional phrases and adverbs to find the true subject.
         if (mainVerbStart > 0) {
+            // Walk backward from verb; skip adv/punct/other; stop at prep (PP boundary)
             for (var j = mainVerbStart - 1; j >= 0; j--) {
-                if (tagged[j].pos === 'noun' || tagged[j].pos === 'pron') { result.subj = j; break; }
+                var jp = tagged[j].pos;
+                if (jp === 'noun' || jp === 'pron') { result.subj = j; break; }
+                // If we hit a preposition scanning backward, the "noun" we'd find is a PP object, not the subject
+                if (jp === 'prep') break;
+                // Skip adjectives (they modify the subject, not the subject itself)
+                if (jp === 'det' || jp === 'adj' || jp === 'adv' || jp === 'other') continue;
             }
         }
 
-        // Subject modifiers: det/adj before subject
+        // Subject modifiers: det/adj/adv in the same region as the subject (before it, after any PP)
         if (result.subj >= 0) {
-            for (var sm = 0; sm < result.subj; sm++) {
+            // Find the start of the subject region (after any sentence-initial prep phrase)
+            var subjRegionStart = 0;
+            for (var srs = 0; srs < result.subj; srs++) {
+                if (tagged[srs].pos === 'prep') {
+                    // Skip to end of this prep phrase
+                    for (var sre = srs + 1; sre < result.subj; sre++) {
+                        if (tagged[sre].pos === 'prep' || tagged[sre].pos === 'conj') { subjRegionStart = sre; break; }
+                        subjRegionStart = sre + 1;
+                    }
+                }
+            }
+            for (var sm = subjRegionStart; sm < result.subj; sm++) {
                 if (tagged[sm].pos === 'det' || tagged[sm].pos === 'adj') result.subjMods.push(sm);
             }
         }
 
         // Detect compound predicate: verb + conj + verb pattern
-        // Collect main verb group (aux + gerund/participle chains)
+        // Scan from mainVerbStart; collect verb group 1, then conjunction, then verb group 2.
+        // The scanner now tolerates nouns/dets between groups (object of first verb may sit between).
         var verbGroup1 = [];
         var conjIdx = -1;
         var verbGroup2 = [];
         var inGroup1 = true;
 
         for (var vk = mainVerbStart; vk < tagged.length; vk++) {
-            if (tagged[vk].pos === 'conj' && inGroup1) {
-                // Check if there's a verb after this conjunction
+            var vkp = tagged[vk].pos;
+            if (vkp === 'conj' && inGroup1 && verbGroup1.length > 0) {
+                // Look ahead for a verb (allow intervening adverbs/determiners/nouns up to 4 tokens)
                 var hasVerbAfter = false;
-                for (var vn = vk + 1; vn < tagged.length; vn++) {
-                    if (tagged[vn].pos === 'verb') { hasVerbAfter = true; break; }
-                    if (tagged[vn].pos === 'noun' || tagged[vn].pos === 'prep') break;
+                for (var vn = vk + 1; vn < Math.min(vk + 5, tagged.length); vn++) {
+                    if (tagged[vn].pos === 'verb' || tagged[vn].pos === 'aux') { hasVerbAfter = true; break; }
+                    if (tagged[vn].pos === 'prep') break; // PP boundary — stop
                 }
                 if (hasVerbAfter) {
                     conjIdx = vk;
@@ -6982,21 +7537,36 @@ This               mass(/)    on ──── everyone
                     continue;
                 }
             }
-            if (tagged[vk].pos === 'verb' || tagged[vk].pos === 'aux') {
+            if (vkp === 'verb' || vkp === 'aux') {
                 if (inGroup1) verbGroup1.push(vk);
                 else verbGroup2.push(vk);
-            } else if (tagged[vk].pos === 'adv') {
+            } else if (vkp === 'adv') {
+                // Adverbs between or around verbs are verb modifiers
                 result.verbMods.push(vk);
-            } else if (tagged[vk].pos !== 'conj' && tagged[vk].pos !== 'other') {
-                if (!inGroup1 && verbGroup2.length === 0) continue; // skip to find verb2
-                break;
+            } else if (!inGroup1 && verbGroup2.length === 0 && (vkp === 'det' || vkp === 'adj' || vkp === 'noun')) {
+                // Tolerating a noun/det between conj and verb2 (e.g., "… and also …")
+                continue;
+            } else if (vkp === 'other' || vkp === 'conj') {
+                continue; // skip punctuation tokens
+            } else {
+                // Once we've found both groups, anything else ends the verb scan
+                if (!inGroup1 && verbGroup2.length > 0) break;
+                if (inGroup1 && verbGroup1.length > 0 && vkp !== 'adv') {
+                    // Stop collecting group1 if we hit a non-adv non-verb after at least one verb
+                    // BUT if we haven't seen a conjunction yet, this is the boundary
+                    inGroup1 = false; // mark done with group1 scanning; don't break yet (conj may follow)
+                }
             }
         }
 
         result.verbs = verbGroup1.concat(verbGroup2);
 
-        // Find where verbs end to look for objects/predicates
-        var afterVerbs = (result.verbs.length > 0) ? result.verbs[result.verbs.length - 1] + 1 : -1;
+        // afterVerbs: position AFTER the last verb in the predicate
+        // For compound predicates, afterVerbs points past the last verb in group2 (or group1 if no group2)
+        var afterVerbs = -1;
+        if (result.verbs.length > 0) {
+            afterVerbs = result.verbs[result.verbs.length - 1] + 1;
+        }
 
         // Detect relative clause: look for who/whom/that/which after a noun
         for (var rc = 0; rc < tagged.length; rc++) {
@@ -7134,8 +7704,11 @@ This               mass(/)    on ──── everyone
         var ctx = canvas.getContext('2d');
         var needsRelClause = analysis.relClauses.length > 0;
         var hasCompound = analysis.verbs.length > 1 && analysis.conjunctions.length > 0;
-        // ── Layout: canvas width needed early for ppPerRow calculation ──
+        // ── Canvas width: use parent width when card was collapsed (offsetWidth=0 bug) ──
         var w = canvas.offsetWidth;
+        if (!w || w < 60) w = (canvas.parentElement && canvas.parentElement.offsetWidth) || 480;
+        w = Math.max(w, 320); // absolute minimum — prevents 0px canvas on collapsed cards
+        canvas.style.width = w + 'px'; // pin CSS width before scaling so layout reads correct value
         var lineW = w - 40;
         var startX = 20;
 
@@ -7153,12 +7726,14 @@ This               mass(/)    on ──── everyone
         var ppRows = ppCount > 0 ? Math.ceil(ppCount / ppPerRow) : 0;
         // relY must clear deepest ppMod text + 28px gap
         var relY = ppBaseY + (ppCount > 0 ? 20 + ppRows * 52 : 34);
-        // Canvas height derived from deepest rendered element + bottom padding
-        var h = needsRelClause ? relY + 54 :
-                ppCount > 0 ? ppBaseY + ppRows * 52 + 2 :
-                modBaseY + 50;
+        // Canvas height: deepest rendered element + generous bottom padding
+        // - compound fork top label sits at forkTopY - 17; ensure at least 20px above it
+        var forkTopClearance = hasCompound ? Math.max(0, 20 - (hasTopMods ? baseY - forkSpreadVal : baseY - 22)) : 0;
+        var h = needsRelClause ? relY + 64 :
+                ppCount > 0 ? ppBaseY + ppRows * 68 + 8 :
+                modBaseY + 60;
+        h = Math.max(h, 100); // never smaller than 100px
 
-        canvas.style.width = w + 'px';
         canvas.style.height = h + 'px';
         canvas.width = w * 2; canvas.height = h * 2;
         ctx.scale(2, 2);
@@ -7167,6 +7742,21 @@ This               mass(/)    on ──── everyone
         var fg = getComputedStyle(html).getPropertyValue('--fg-primary').trim();
         var muted = getComputedStyle(html).getPropertyValue('--fg-muted').trim();
         var advColor = getComputedStyle(html).getPropertyValue('--pos-adv-canvas').trim() || '#e879f9';
+
+        // Helper: draw text truncated to maxPx with ellipsis, centered at (cx, cy)
+        function fillTextClipped(text, cx, cy, maxPx) {
+            if (!maxPx || maxPx <= 0) { ctx.fillText(text, cx, cy); return; }
+            var tw = ctx.measureText(text).width;
+            if (tw <= maxPx) { ctx.fillText(text, cx, cy); return; }
+            // Binary-search for truncation point
+            var lo = 0, hi = text.length;
+            var ellipsis = '…';
+            while (lo < hi - 1) {
+                var mid = Math.floor((lo + hi) / 2);
+                if (ctx.measureText(text.slice(0, mid) + ellipsis).width <= maxPx) lo = mid; else hi = mid;
+            }
+            ctx.fillText(text.slice(0, lo) + ellipsis, cx, cy);
+        }
 
         ctx.strokeStyle = fg;
         ctx.lineWidth = 2;
@@ -7198,7 +7788,7 @@ This               mass(/)    on ──── everyone
             var subjRx = Math.max(22, (dividerX - startX) / 2 - 4);
             hlBox(subjCx, baseY - 8, analysis.subj, subjRx, 18);
             ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 14px -apple-system, sans-serif'; ctx.textAlign = 'center';
-            ctx.fillText(tagged[analysis.subj].word, subjCx, baseY - 8);
+            fillTextClipped(tagged[analysis.subj].word, subjCx, baseY - 8, subjRx * 2 - 4);
             ctx.fillStyle = muted; ctx.font = '9px sans-serif';
             ctx.fillText('SUBJECT', subjCx, baseY - 22);
             diagramHitMap.push({ wi: sentStart + analysis.subj, word: tagged[analysis.subj].word, label: 'SUBJECT (' + tagged[analysis.subj].label + ')', cx: subjCx, cy: baseY - 12, rx: subjRx, ry: 18 });
@@ -7269,7 +7859,7 @@ This               mass(/)    on ──── everyone
             var forkRx = Math.max(28, (forkEndX - forkX) / 2 - 4);
             hlBox(verbCenterX, forkTopY - 5, topMainIdx, forkRx, 18);
             ctx.fillStyle = '#ef4444'; ctx.font = 'bold 13px -apple-system, sans-serif'; ctx.textAlign = 'center';
-            ctx.fillText(tvText, verbCenterX, forkTopY - 5);
+            fillTextClipped(tvText, verbCenterX, forkTopY - 5, forkRx * 2 - 4);
             ctx.fillStyle = muted; ctx.font = '8px sans-serif';
             ctx.fillText('VERB', verbCenterX, forkTopY - 17);
             if (topVerbs.length > 0) diagramHitMap.push({ wi: sentStart + topMainIdx, word: tvText, label: 'VERB (top)', cx: verbCenterX, cy: forkTopY - 9, rx: forkRx, ry: 18 });
@@ -7279,7 +7869,7 @@ This               mass(/)    on ──── everyone
             var botMainIdx = botVerbs.length > 0 ? botVerbs[botVerbs.length - 1] : 0;
             hlBox(verbCenterX, forkBotY - 5, botMainIdx, forkRx, 18);
             ctx.fillStyle = '#ef4444'; ctx.font = 'bold 13px -apple-system, sans-serif'; ctx.textAlign = 'center';
-            ctx.fillText(bvText, verbCenterX, forkBotY - 5);
+            fillTextClipped(bvText, verbCenterX, forkBotY - 5, forkRx * 2 - 4);
             if (botVerbs.length > 0) diagramHitMap.push({ wi: sentStart + botMainIdx, word: bvText, label: 'VERB (bottom)', cx: verbCenterX, cy: forkBotY - 9, rx: forkRx, ry: 18 });
 
             // Conjunction label on the connector
@@ -7322,7 +7912,7 @@ This               mass(/)    on ──── everyone
             var verbRx = Math.max(30, (verbEndX - dividerX) / 2 - 4);
             hlBox(verbCx, baseY - 8, mainVerbIdx, verbRx, 18);
             ctx.fillStyle = '#ef4444'; ctx.font = 'bold 14px -apple-system, sans-serif'; ctx.textAlign = 'center';
-            ctx.fillText(verbText, verbCx, baseY - 8);
+            fillTextClipped(verbText, verbCx, baseY - 8, verbRx * 2 - 4);
             ctx.fillStyle = muted; ctx.font = '9px sans-serif';
             ctx.fillText('VERB', verbCx, baseY - 22);
             diagramHitMap.push({ wi: sentStart + mainVerbIdx, word: verbText, label: 'VERB', cx: verbCx, cy: baseY - 12, rx: verbRx, ry: 18 });
@@ -7353,7 +7943,7 @@ This               mass(/)    on ──── everyone
             var doRx = Math.max(22, (startX + lineW - verbEndX) / 2 - 4);
             hlBox(doCx, baseY - 8, analysis.directObj, doRx, 18);
             ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 14px -apple-system, sans-serif'; ctx.textAlign = 'center';
-            ctx.fillText(tagged[analysis.directObj].word, doCx, baseY - 8);
+            fillTextClipped(tagged[analysis.directObj].word, doCx, baseY - 8, doRx * 2 - 4);
             ctx.fillStyle = muted; ctx.font = '9px sans-serif';
             ctx.fillText('DIR. OBJ', doCx, baseY - 22);
             diagramHitMap.push({ wi: sentStart + analysis.directObj, word: tagged[analysis.directObj].word, label: 'DIR. OBJ (' + tagged[analysis.directObj].label + ')', cx: doCx, cy: baseY - 12, rx: doRx, ry: 18 });
@@ -7490,8 +8080,11 @@ This               mass(/)    on ──── everyone
                     }
                 }
 
-                var relStartX = antecedentX - 30;
-                var relEndX = startX + lineW - 20;
+                // Anchor rel clause baseline from left edge (startX+20) to right edge with margin
+                // — do NOT derive from antecedentX which may be near right edge and cause overflow.
+                var relStartX = Math.min(antecedentX - 30, startX + lineW * 0.2);
+                relStartX = Math.max(relStartX, startX + 8);
+                var relEndX = startX + lineW - 8;
 
                 // Dashed connector from the antecedent noun down to subordinate baseline
                 ctx.setLineDash([4, 4]);
@@ -7503,25 +8096,31 @@ This               mass(/)    on ──── everyone
                 ctx.strokeStyle = fg; ctx.lineWidth = 1.5;
                 ctx.beginPath(); ctx.moveTo(relStartX, relY); ctx.lineTo(relEndX, relY); ctx.stroke();
 
-                // Relative pronoun
-                hlBox(relStartX + 30, relY - 6, cl.pronoun, 30, 16);
-                ctx.fillStyle = '#06b6d4'; ctx.font = 'bold 12px -apple-system, sans-serif'; ctx.textAlign = 'center';
-                ctx.fillText(tagged[cl.pronoun].word, relStartX + 30, relY - 6);
-                ctx.fillStyle = muted; ctx.font = '8px sans-serif';
-                ctx.fillText('REL.PRON', relStartX + 30, relY - 18);
-                diagramHitMap.push({ wi: sentStart + cl.pronoun, word: tagged[cl.pronoun].word, label: 'REL.PRON', cx: relStartX + 30, cy: relY - 6, rx: 30, ry: 16 });
+                // Available horizontal space on the subordinate baseline
+                var relAvailW = relEndX - relStartX;
+                var relRegionW = Math.max(relAvailW / 3, 60);
 
-                // Verb in relative clause
+                // Relative pronoun — first third
+                var relPronCx = relStartX + relRegionW * 0.5;
+                hlBox(relPronCx, relY - 6, cl.pronoun, relRegionW * 0.45, 16);
+                ctx.fillStyle = '#06b6d4'; ctx.font = 'bold 12px -apple-system, sans-serif'; ctx.textAlign = 'center';
+                fillTextClipped(tagged[cl.pronoun].word, relPronCx, relY - 6, relRegionW - 6);
+                ctx.fillStyle = muted; ctx.font = '8px sans-serif';
+                ctx.fillText('REL.PRON', relPronCx, relY - 18);
+                diagramHitMap.push({ wi: sentStart + cl.pronoun, word: tagged[cl.pronoun].word, label: 'REL.PRON', cx: relPronCx, cy: relY - 6, rx: relRegionW * 0.45, ry: 16 });
+
+                // Verb in relative clause — second third
                 if (cl.verb >= 0) {
-                    var relDivX = relStartX + 65;
+                    var relDivX = relStartX + relRegionW;
                     ctx.strokeStyle = fg; ctx.lineWidth = 2;
                     ctx.beginPath(); ctx.moveTo(relDivX, relY - 16); ctx.lineTo(relDivX, relY + 6); ctx.stroke();
-                    hlBox(relDivX + 40, relY - 6, cl.verb, 35, 16);
-                    ctx.fillStyle = '#ef4444'; ctx.font = 'bold 12px -apple-system, sans-serif';
-                    ctx.fillText(tagged[cl.verb].word, relDivX + 40, relY - 6);
+                    var relVerbCx = relDivX + relRegionW * 0.5;
+                    hlBox(relVerbCx, relY - 6, cl.verb, relRegionW * 0.45, 16);
+                    ctx.fillStyle = '#ef4444'; ctx.font = 'bold 12px -apple-system, sans-serif'; ctx.textAlign = 'center';
+                    fillTextClipped(tagged[cl.verb].word, relVerbCx, relY - 6, relRegionW - 6);
                     ctx.fillStyle = muted; ctx.font = '8px sans-serif';
-                    ctx.fillText('VERB', relDivX + 40, relY - 18);
-                    diagramHitMap.push({ wi: sentStart + cl.verb, word: tagged[cl.verb].word, label: 'VERB (rel.)', cx: relDivX + 40, cy: relY - 6, rx: 35, ry: 16 });
+                    ctx.fillText('VERB', relVerbCx, relY - 18);
+                    diagramHitMap.push({ wi: sentStart + cl.verb, word: tagged[cl.verb].word, label: 'VERB (rel.)', cx: relVerbCx, cy: relY - 6, rx: relRegionW * 0.45, ry: 16 });
                 }
 
                 // Rest of clause — separate nouns from their det/adj modifiers
@@ -7533,22 +8132,25 @@ This               mass(/)    on ──── everyone
                         else relNouns.push(ri);
                     });
 
-                    // Draw object divider if there's a noun after the verb
+                    // Draw object divider if there's a noun after the verb — third region
                     if (relNouns.length > 0) {
-                        var relObjDivX = relStartX + 130;
+                        var relObjDivX = relStartX + relRegionW * 2;
                         ctx.strokeStyle = fg; ctx.lineWidth = 1.5;
                         ctx.beginPath(); ctx.moveTo(relObjDivX, relY - 10); ctx.lineTo(relObjDivX, relY + 4); ctx.stroke();
 
+                        var relObjCx = relObjDivX + relRegionW * 0.5;
+                        var relObjRx = Math.min(relRegionW * 0.45, (relEndX - relObjDivX) / 2 - 4);
                         var relObjText = relNouns.map(function (ri) { return tagged[ri].word; }).join(' ');
-                        hlBox(relObjDivX + 45, relY - 6, relNouns[0], 40, 16);
+                        hlBox(relObjCx, relY - 6, relNouns[0], relObjRx, 16);
                         ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 12px -apple-system, sans-serif'; ctx.textAlign = 'center';
-                        ctx.fillText(relObjText, relObjDivX + 45, relY - 6);
-                        diagramHitMap.push({ wi: sentStart + relNouns[0], word: relObjText, label: 'OBJ (rel.)', cx: relObjDivX + 45, cy: relY - 6, rx: 40, ry: 16 });
+                        fillTextClipped(relObjText, relObjCx, relY - 6, relObjRx * 2 - 4);
+                        diagramHitMap.push({ wi: sentStart + relNouns[0], word: relObjText, label: 'OBJ (rel.)', cx: relObjCx, cy: relY - 6, rx: relObjRx, ry: 16 });
 
                         // Render det/adj as diagonals beneath the noun on the subordinate baseline
                         relMods.forEach(function (mi, modIdx) {
-                            var rmx = relObjDivX + 20 + modIdx * 40;
+                            var rmx = relObjDivX + 20 + modIdx * 36;
                             var rmy = relY + 16;
+                            if (rmx > relEndX - 8) return; // clip — don't draw past right edge
                             ctx.strokeStyle = muted; ctx.lineWidth = 1;
                             ctx.beginPath(); ctx.moveTo(rmx + 5, relY); ctx.lineTo(rmx - 3, rmy); ctx.stroke();
                             ctx.fillStyle = tagged[mi].pos === 'adj' ? '#10b981' : '#6b7280';
@@ -7559,7 +8161,7 @@ This               mass(/)    on ──── everyone
                     } else {
                         var restText = cl.rest.map(function (ri) { return tagged[ri].word; }).join(' ');
                         ctx.fillStyle = fg; ctx.font = '11px -apple-system, sans-serif'; ctx.textAlign = 'left';
-                        ctx.fillText(restText, relStartX + 140, relY - 6);
+                        ctx.fillText(restText, relStartX + relRegionW * 2 + 4, relY - 6);
                     }
                 }
             });
@@ -7711,14 +8313,47 @@ This               mass(/)    on ──── everyone
         applyFontSize(state.fontSize);
         applyFont(state.fontFamily || 'system');
         applyDyslexia(state.dyslexia);
+        applyCognitiveMode(state.cognitiveMode);
         applyRamp(state.ramp);
         applyAnimIntensity(state.animIntensity);
         wSlider.value = state.wpm;
         wVal.textContent = state.wpm;
         syncWpmPresets();
         if (state.groqKey) $('groq-key').value = state.groqKey;
-        if (state.dyslexia) loadDyslexiaFont();
+        if (state.dyslexia === 'opendyslexic') loadDyslexiaFont();
+        if (state.dyslexia === 'atkinson')     loadAtkinsonFont();
         updStatsUI();
+
+        // Onboarding — show on first run (no sessions yet and not dismissed)
+        if (stats.sessions === 0 && !isOnboardingDone()) {
+            setTimeout(showOnboarding, 600);
+        } else if (!isTourDone()) {
+            // Returning user who skipped onboarding but hasn't seen tour
+            setTimeout(showTour, 800);
+        }
+
+        // Onboarding button handlers
+        var btnObCal = $('btn-ob-calibrate');
+        var btnObSkip = $('btn-ob-skip');
+        if (btnObCal) btnObCal.addEventListener('click', function () {
+            startCalibrationSession();
+            if (!isTourDone()) setTimeout(showTour, 800);
+        });
+        if (btnObSkip) btnObSkip.addEventListener('click', function () {
+            hideOnboarding();
+            markOnboardingDone();
+            if (!isTourDone()) setTimeout(showTour, 400);
+        });
+
+        // Tour button handlers
+        var btnTourNext = $('btn-tour-next');
+        var btnTourSkip = $('btn-tour-skip');
+        if (btnTourNext) btnTourNext.addEventListener('click', tourNext);
+        if (btnTourSkip) btnTourSkip.addEventListener('click', hideTour);
+        $('tour-backdrop').addEventListener('click', hideTour);
+
+        // Init setting tooltips (adds ⓘ icons to settings panel h3s)
+        initSettingTooltips();
 
         // Apply saved chunk
         document.querySelectorAll('#cg button').forEach(function (b) {
@@ -7742,6 +8377,7 @@ This               mass(/)    on ──── everyone
             wVal.textContent = state.wpm;
             updProg(); savePrefs();
             syncWpmPresets();
+            autoSuggestCognitiveMode();
         });
         document.querySelectorAll('.wpm-preset').forEach(function (b) {
             b.addEventListener('click', function () {
@@ -7858,12 +8494,18 @@ This               mass(/)    on ──── everyone
             b.addEventListener('click', function () { applyFont(b.dataset.font); });
         });
 
-        // Dyslexia toggle
+        // Cognitive mode toggle
+        document.querySelectorAll('#cognitive-toggle button').forEach(function (b) {
+            b.addEventListener('click', function () { applyCognitiveMode(b.dataset.v); });
+        });
+
+        // Accessible font toggle
         document.querySelectorAll('#dyslexia-toggle button').forEach(function (b) {
             b.addEventListener('click', function () {
-                var on = b.dataset.v === 'on';
-                if (on) loadDyslexiaFont();
-                applyDyslexia(on);
+                var mode = b.dataset.v;
+                if (mode === 'opendyslexic') loadDyslexiaFont();
+                if (mode === 'atkinson')     loadAtkinsonFont();
+                applyDyslexia(mode);
             });
         });
 

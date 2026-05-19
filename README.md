@@ -17,11 +17,10 @@
 </p>
 
 <p align="center">
-  <a href="https://focal-reader.github.io"><strong>Try it Live</strong></a> ·
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#the-science"><strong>Science</strong></a> ·
   <a href="#getting-started"><strong>Get Started</strong></a> ·
-  <a href="https://github.com/focal-reader/focal-reader/issues"><strong>Report Bug</strong></a>
+  <a href="https://github.com/shadowdevnotreal/focal-reader/issues"><strong>Report Bug</strong></a>
 </p>
 
 ---
@@ -55,17 +54,48 @@ Focal takes this decades-old research technique and wraps it in a modern, privac
 
 ### ⚡ Reading Engine
 
-<table>
-<tr><td>
-
 - **RSVP with ORP** — Optimal Recognition Point highlighting (Brysbaert & Nazir, 1998)
 - **Intelligent pacing** — word length, punctuation, and paragraph breaks adjust timing
 - **Multi-language ORP** — Latin, Cyrillic, CJK, Arabic, Devanagari
 - **Speed control** — 100–1000 WPM with chunking (1–3 words)
+- **Speed Ramp-Up** — optional soft start: begins 40% slower and accelerates to full WPM over the first 50 words
 - **Zen mode** — press `Z` for distraction-free reading
 
-</td></tr>
-</table>
+### 🎓 Onboarding & Guided Tour
+
+New users get a **structured onboarding experience** designed around RSVP adaptation science:
+
+```
+┌─────────────────────────────────────────────────────┐
+│  Welcome to Focal                                    │
+│                                                      │
+│  RSVP takes about 2 weeks to feel natural —         │
+│  your brain needs time to build the reflex.          │
+│                                                      │
+│  DAYS 1–3    DAYS 4–7    DAYS 8–14                  │
+│  200 WPM     250 WPM     300+ WPM                   │
+│  Build habit  Feel rhythm  Comprehension locks in    │
+│                                                      │
+│  Training Day 1 of 14  ▓░░░░░░░░░░░░░               │
+│                                                      │
+│  [Start Calibration (200 WPM)]  [Skip for now]      │
+└─────────────────────────────────────────────────────┘
+```
+
+After onboarding, a **6-step spotlight tour** walks through every key feature — with a glowing highlight ring, contextual explanation, and step-dot progress indicator. Runs once and stores its state locally.
+
+### 📖 Reading Display Mode
+
+Adapt the RSVP word typography to match your cognitive goal — or let the app decide automatically:
+
+| Mode | Typography | Best For |
+|------|-----------|----------|
+| **Default** | Monospace, neutral baseline | General reading |
+| **Scan** | Light Inter, open letter-spacing | High-WPM skimming (≥350 WPM) |
+| **Deep** | Bold Georgia serif | Slow deliberate comprehension (≤200 WPM) |
+| **Auto ✦** | Switches automatically | Adapts in real-time as you drag the WPM slider |
+
+**Auto mode** monitors your WPM slider live and switches typography the moment you cross the threshold — no manual switching needed.
 
 ### 📈 Psychometric Diagnostics
 
@@ -103,6 +133,16 @@ AI-generated assessments with real grading and per-text score tracking:
 - **Fill-in-the-blank** — free text with fuzzy matching
 - Scores saved per-text and feed into Comprehension & Effective WPM
 
+### 🔬 Reed-Kellogg Sentence Diagrammer
+
+An interactive, rule-based **sentence diagrammer** built into the Learn tab:
+
+- Parses any entered sentence into parts of speech using a custom two-pass POS tagger
+- Renders a proper Reed-Kellogg diagram on HTML5 Canvas — subject, verb, direct object, prepositional phrases, relative clauses
+- Handles compound predicates, gerund subjects, adjective chains, auxiliary verb groups
+- Retina-quality output (2× canvas scaling) with text clipping for overflow prevention
+- Useful for grammar instruction, ESL learning, and linguistic analysis
+
 ### 🤖 AI-Powered Analysis
 
 > Powered by **Groq** (Llama 3.3 70B). Your API key goes directly to Groq — Focal never touches it.
@@ -116,6 +156,30 @@ AI-generated assessments with real grading and per-text score tracking:
 | **Explain Simply** | Learn | Complex text rewritten in plain language |
 | **Reading Level** | Learn | Flesch-Kincaid grade + vocabulary analysis |
 | **AI Insights** | Stats | Clinical psychometric analysis of your patterns |
+
+### ♿ Accessibility
+
+> Built accessibility-first for readers with dyslexia, ADHD, low vision, and visual processing disorders.
+
+**Accessible Reading Fonts** — two clinically-designed typefaces selectable with a single click:
+
+| Font | Design Principle | Best For |
+|------|-----------------|----------|
+| **OpenDyslexic** | Weighted letter bottoms prevent b/d/p/q reversal | Dyslexia |
+| **Atkinson Hyperlegible** | Maximized inter-character differentiation | Low vision |
+
+Additional accessibility features:
+- **High contrast mode** + adjustable accent colors + dark/light themes
+- **Full background palette** — 2D canvas picker, 24 presets, hex input, depth/warmth sliders
+- **Brightness control** — dim the app independently of system brightness
+- **Keyboard-only** navigation — every function has a shortcut
+- **Touch** — tap, swipe left/right, swipe up/down
+- **Screen readers** — `aria-live`, `aria-expanded`, `aria-label` throughout
+- **`prefers-reduced-motion`** — all animations suppressed at OS level
+
+### 💡 Contextual Tooltips
+
+Every setting in the Settings panel has an **ⓘ info badge** with a detailed explanation on hover — covering what the setting does, the science behind it, and when to use it. No documentation required.
 
 ### 🔥 Gamification
 
@@ -147,18 +211,6 @@ Everything survives a page refresh — zero data loss:
 | Library texts | `IndexedDB` |
 | Timer state (remaining, round, break) | `localStorage` |
 
-### ♿ Accessibility
-
-> Built accessibility-first for readers with SLD, dyslexia, ADHD, and visual processing disorders.
-
-- **OpenDyslexic** font toggle
-- **Full background palette** — 2D canvas picker, 24 presets, hex input, depth/warmth sliders
-- **High contrast mode** + adjustable accent colors + dark/light themes
-- **Keyboard-only** navigation — every function, no mouse required
-- **Touch** — tap, swipe left/right, swipe up/down
-- **Screen readers** — `aria-live`, `aria-expanded`, `aria-label` throughout
-- **`prefers-reduced-motion`** — all animations suppressed at OS level
-
 ### 📂 Input Sources
 
 ```
@@ -178,9 +230,10 @@ open index.html
 
 1. **Add text** — paste, upload, drag-drop, or fetch from URL
 2. **Press Space** to start reading
-3. **Start at 200–250 WPM** — your brain adapts in a few sessions
-4. **Switch to Learn** to quiz yourself
-5. **Check Stats** for your psychometric profile
+3. **Follow the onboarding** — start at 200 WPM and follow the 14-day ramp
+4. **Take the feature tour** — a guided spotlight walkthrough runs on first launch
+5. **Switch to Learn** to quiz yourself
+6. **Check Stats** for your psychometric profile
 
 ### ⌨️ Keyboard Shortcuts
 
@@ -207,6 +260,8 @@ Focal is built on peer-reviewed reading research:
 > **Psychometrics**: Hasbrouck & Tindal fluency norms, DIBELS assessment framework
 >
 > **Pacing**: Word length, punctuation, and paragraph structure **modulate display timing** automatically
+>
+> **Accessibility**: OpenDyslexic (Antinis, 2011) — weighted letterforms reduce reversal errors. Atkinson Hyperlegible (Braille Institute, 2019) — maximized inter-character differentiation for low vision.
 
 ---
 
@@ -215,7 +270,7 @@ Focal is built on peer-reviewed reading research:
 | | |
 |---|---|
 | **Architecture** | Single-file PWA — all HTML + CSS + JS in one IIFE |
-| **Size** | ~500KB (~8,500 lines) |
+| **Size** | ~550KB (~9,000 lines) |
 | **Framework** | None. Zero dependencies. Pure vanilla. |
 | **Offline** | Service worker with cache-first strategy |
 | **Storage** | `localStorage` + `IndexedDB` — nothing leaves your device |
@@ -248,7 +303,6 @@ Contributions, bug reports, and feature requests are welcome.
 **High-impact areas:**
 - Additional language support and RTL text handling
 - Clinical research partnerships for SLD efficacy studies
-- Dyslexia-friendly font options
 - Mobile gesture refinements
 - EPUB format improvements
 - Screen reader testing
@@ -268,6 +322,9 @@ Potter, M.C. (1984). Rapid serial visual presentation (RSVP): A method for
 Brysbaert, M. & Nazir, T. (1998). Visual constraints in written word
   recognition: Evidence from the optimal viewing-position effect.
   Journal of Research in Reading, 21(3), 216–230.
+
+Hasbrouck, J. & Tindal, G.A. (2006). Oral reading fluency norms: A valuable
+  assessment tool for reading teachers. The Reading Teacher, 59(7), 636–644.
 ```
 
 ---
