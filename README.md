@@ -67,17 +67,17 @@ New users get a **structured onboarding experience** designed around RSVP adapta
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  Welcome to Focal                                    │
-│                                                      │
+│  Welcome to Focal                                   │
+│                                                     │
 │  RSVP takes about 2 weeks to feel natural —         │
-│  your brain needs time to build the reflex.          │
-│                                                      │
+│  your brain needs time to build the reflex.         │
+│                                                     │
 │  DAYS 1–3    DAYS 4–7    DAYS 8–14                  │
 │  200 WPM     250 WPM     300+ WPM                   │
-│  Build habit  Feel rhythm  Comprehension locks in    │
-│                                                      │
+│  Build habit  Feel rhythm  Comprehension locks in   │
+│                                                     │
 │  Training Day 1 of 14  ▓░░░░░░░░░░░░░               │
-│                                                      │
+│                                                     │
 │  [Start Calibration (200 WPM)]  [Skip for now]      │
 └─────────────────────────────────────────────────────┘
 ```
@@ -116,15 +116,15 @@ AI-generated assessments with real grading and per-text score tracking:
 
 ```
 ┌─ Q1 — Multiple Choice ──────────────────────────┐
-│ What is the primary advantage of RSVP?           │
-│                                                   │
-│  (A) Eliminates saccadic eye movement     ← ✅   │
-│  (B) Increases font size                         │
-│  (C) Adds background music                       │
-│  (D) Scrolls text automatically                  │
-│                                                   │
-│  ✅ Correct! RSVP removes the need for eyes to   │
-│  jump between fixation points.                    │
+│ What is the primary advantage of RSVP?          │
+│                                                 │
+│  (A) Eliminates saccadic eye movement     ← ✅  │
+│  (B) Increases font size                        │
+│  (C) Adds background music                      │
+│  (D) Scrolls text automatically                 │
+│                                                 │
+│  ✅ Correct! RSVP removes the need for eyes to  │
+│  jump between fixation points.                   │
 └──────────────────────────────────────────────────┘
 ```
 
